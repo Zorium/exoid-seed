@@ -14,11 +14,33 @@ before ->
   unless config.VERBOSE
     log.level = null
 
-  r.dbList()
-  .contains DB
-  .do (result) ->
-    r.branch result,
-      r.dbDrop(DB),
-      {dopped: 0}
-  .run()
+  truncateTables = ->
+    r.dbList()
+    .contains DB
+    .do (result) ->
+      r.branch result,
+        r.tableList()
+        .forEach( (table) ->
+          r.table(table).delete()
+        ),
+        {dopped: 0}
+    .run()
+
+  dropIndexes = ->
+    r.dbList()
+    .contains DB
+    .do (result) ->
+      r.branch result,
+        r.tableList()
+        .forEach( (table) ->
+          r.table(table).indexList().forEach (index) ->
+            r.table(table).indexDrop index
+        ),
+        {dopped: 0}
+    .run()
+
+  Promise.all [
+    truncateTables()
+    dropIndexes()
+  ]
   .then server.setup
