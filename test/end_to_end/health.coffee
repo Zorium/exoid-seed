@@ -15,3 +15,19 @@ describe 'Health Check Routes', ->
       flare
         .get '/ping'
         .expect 200, 'pong'
+
+  describe 'POST /log', ->
+    it 'logs', ->
+      flare
+        .post '/log',
+          event: 'client_error'
+          message: 'test'
+        .expect 204
+
+    describe '400', ->
+      it 'fails to log non client_error events', ->
+        flare
+          .post '/log',
+            event: 'xxx'
+            message: 'xxx'
+          .expect 400

@@ -1,13 +1,16 @@
+fs = require 'fs'
+_ = require 'lodash'
+log = require 'loga'
 cors = require 'cors'
 express = require 'express'
-bodyParser = require 'body-parser'
-fs = require 'fs'
 Promise = require 'bluebird'
-_ = require 'lodash'
+bodyParser = require 'body-parser'
 
 config = require './config'
 routes = require './routes'
 r = require './services/rethinkdb'
+
+HEALTHCHECK_TIMEOUT = 1000
 
 # Setup rethinkdb
 createDatabaseIfNotExist = (dbName) ->
@@ -63,9 +66,33 @@ app = express()
 
 app.set 'x-powered-by', false
 
-app.use bodyParser.json()
 app.use cors()
-app.use routes
+app.use bodyParser.json()
+
+app.get '/ping', (req, res) -> res.send 'pong'
+
+app.get '/healthcheck', (req, res, next) ->
+  Promise.settle [
+    r.dbList().run().timeout HEALTHCHECK_TIMEOUT
+  ]
+  .spread (rethinkdb) ->
+    result =
+      rethinkdb: rethinkdb.isFulfilled()
+
+    result.healthy = _.every _.values result
+    return result
+  .then (status) ->
+    res.json status
+  .catch next
+
+app.post '/log', (req, res) ->
+  unless req.body?.event is 'client_error'
+    return res.status(400).send 'must be type client_error'
+
+  log.warn req.body
+  res.status(204).send()
+
+app.post '/exoid', routes
 
 module.exports = {
   app

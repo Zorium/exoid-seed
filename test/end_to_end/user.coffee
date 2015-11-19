@@ -1,77 +1,81 @@
 _ = require 'lodash'
+b = require 'b-assert'
 server = require '../../index'
 flare = require('flare-gun').express(server.app)
 
 schemas = require '../../schemas'
 
+RANDOM_ID = '08841ff6-2c80-493f-81b0-c1a9c486b1b0'
+
 describe 'User Routes', ->
-  describe 'POST /users', ->
+  describe 'users.create', ->
     it 'returns new user', ->
       flare
-        .post '/users', {username: 'test'}
-        .expect 200, schemas.user
+        .exoid 'users.create', {username: 'test'}
+        .expect schemas.user
 
     describe '400', ->
       it 'fails with invalid username', ->
         flare
-          .post '/users', {username: 123}
+          .exoid 'users.create', {username: 123}
           .expect 400
 
-  describe 'GET /users/:id', ->
+  describe 'users.get', ->
     it 'returns user', ->
       flare
-        .post '/users', {username: 'test'}
+        .exoid 'users.create', {username: 'test'}
         .stash 'me'
-        .get '/users/:me.id'
-        .expect 200, ':me'
+        .exoid 'users.get', ':me.id'
+        .expect ':me'
 
     describe '400', ->
       it 'returns 404 if user not found', ->
         flare
-          .get '/users/-1'
+          .exoid 'users.get', RANDOM_ID
           .expect 404
 
-  describe 'PUT /users/:id', ->
+  describe 'users.update', ->
     it 'updates user', ->
       flare
-        .post '/users', {username: 'test'}
-        .expect 200
+        .exoid 'users.create', {username: 'test'}
         .stash 'me'
-        .put '/users/:me.id', {username: 'changed'}
-        .expect 200, _.defaults {
+        .exoid 'users.update', {id: ':me.id', username: 'changed'}
+        .expect _.defaults {
           username: 'changed'
         }, schemas.user
-        .get '/users/:me.id'
-        .expect 200, _.defaults {
+        .exoid 'users.get', ':me.id'
+        .expect _.defaults {
           username: 'changed'
         }, schemas.user
 
     describe '400', ->
       it 'fails if invalid update values', ->
         flare
-          .post '/users', {username: 'test'}
+          .exoid 'users.create', {username: 'test'}
           .stash 'me'
-          .put '/users/:me.id', {username: 123}
+          .exoid 'users.update', {id: ':me.id', username: 123}
           .expect 400
 
       it 'returns 404 if user not found', ->
         flare
-          .put '/users/-1'
+          .exoid 'users.update', {id: RANDOM_ID}
           .expect 404
 
-  describe 'DELETE /users/:id', ->
+  describe 'users.delete', ->
     it 'removes user', ->
       flare
-        .post '/users', {username: 'test'}
-        .expect 200
+        .exoid 'users.create', {username: 'test'}
         .stash 'me'
-        .del '/users/:me.id'
-        .expect 204
-        .get '/users/:me.id'
+        .exoid 'users.delete', ':me.id'
+        .expect ({cache}, {me}) ->
+          b cache.length, 1
+          b cache[0].path, me.id
+          b cache[0].body, undefined
+        .exoid 'users.get', ':me.id'
         .expect 404
 
     describe '400', ->
       it 'returns 404 if user not found', ->
         flare
-          .del '/users/-1'
+          .exoid 'users.delete', RANDOM_ID
           .expect 404

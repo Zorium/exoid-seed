@@ -1,13 +1,11 @@
 _ = require 'lodash'
-router = require 'promise-router'
+router = require 'exoid-router'
 
 User = require '../models/user'
 schemas = require '../schemas'
 
 class UserCtrl
-  create: (req) ->
-    username = req.body?.username
-
+  create: ({username} = {}) ->
     router.assert {username}, {
       username: schemas.user.username
     }
@@ -15,40 +13,42 @@ class UserCtrl
     User.create {username}
     .then User.sanitize(null)
 
-  getById: (req) ->
-    id = req.params.id
+  get: (id) ->
+    router.assert id, schemas.user.id
 
     User.getById id
     .tap (user) ->
       unless user
-        throw new router.Error status: 404, detail: 'user not found'
+        router.throw status: 404, info: 'user not found'
     .then User.sanitize(null)
 
-  updateById: (req) ->
-    id = req.params.id
-    diff = req.body
-
+  update: (body) ->
     updateSchema =
+      id: schemas.user.id
       username: schemas.user.username.optional()
 
-    diff = _.pick diff, _.keys(updateSchema)
+    diff = _.pick body, _.keys(updateSchema)
+
     router.assert diff, updateSchema
 
-    User.updateById id, diff
+    User.updateById diff.id, diff
     .then ({replaced}) ->
       if replaced is 0
-        throw new router.Error status: 404, detail: 'user not found'
-      User.getById id
+        router.throw status: 404, detail: 'user not found'
+      User.getById diff.id
     .then User.sanitize(null)
 
-  deleteById: (req) ->
-    id = req.params.id
+  delete: (body, {cache}) ->
+    id = body
+
+    router.assert id, schemas.user.id
 
     User.deleteById(id)
     .then ({deleted}) ->
       if deleted is 0
-        throw new router.Error status: 404, detail: 'user not found'
+        router.throw status: 404, detail: 'user not found'
     .then ->
+      cache id, undefined
       null
 
 
