@@ -4,7 +4,6 @@ shell = require 'gulp-shell'
 nodemon = require 'gulp-nodemon'
 istanbul = require 'gulp-coffee-istanbul'
 coffeelint = require 'gulp-coffeelint'
-clayLintConfig = require 'clay-coffeescript-style-guide'
 
 paths =
   serverBin: './bin/server.coffee'
@@ -50,5 +49,5 @@ gulp.task 'test', (if process.env.LINT is '1' then ['lint'] else []), ->
 
 gulp.task 'lint', ->
   gulp.src paths.coffee
-    .pipe coffeelint(null, clayLintConfig)
+    .pipe coffeelint()
     .pipe coffeelint.reporter()
