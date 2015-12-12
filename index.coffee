@@ -9,6 +9,7 @@ bodyParser = require 'body-parser'
 config = require './config'
 routes = require './routes'
 r = require './services/rethinkdb'
+AuthService = require './services/auth'
 
 HEALTHCHECK_TIMEOUT = 1000
 
@@ -68,6 +69,9 @@ app.set 'x-powered-by', false
 
 app.use cors()
 app.use bodyParser.json()
+# Avoid CORS preflight
+app.use bodyParser.json({type: 'text/plain'})
+app.use AuthService.middleware
 
 app.get '/ping', (req, res) -> res.send 'pong'
 
@@ -92,7 +96,7 @@ app.post '/log', (req, res) ->
   log.warn req.body
   res.status(204).send()
 
-app.post '/exoid', routes
+app.post '/exoid', routes.asMiddleware()
 
 module.exports = {
   app

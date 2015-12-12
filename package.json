@@ -33,6 +33,7 @@
     "exoid-router": "^0.2.2",
     "express": "^4.13.3",
     "joi": "^6.10.0",
+    "jsonwebtoken": "^5.4.1",
     "lodash": "^3.10.1",
     "loga": "^0.1.3",
     "node-uuid": "^1.4.7",
