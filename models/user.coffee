@@ -7,7 +7,7 @@ config = require '../config'
 
 USERS_TABLE = 'users'
 
-defaultUser = (user) ->
+defaults = (user) ->
   unless user?
     return null
 
@@ -32,7 +32,7 @@ class UserModel
   ]
 
   create: (user) ->
-    user = defaultUser user
+    user = defaults user
 
     r.table USERS_TABLE
     .insert user
@@ -44,7 +44,7 @@ class UserModel
     r.table USERS_TABLE
     .get id
     .run()
-    .then defaultUser
+    .then defaults
 
   updateById: (id, diff) ->
     r.table USERS_TABLE
