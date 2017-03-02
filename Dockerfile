@@ -1,13 +1,16 @@
-FROM node:4.2.2
+FROM node:7.7.0
+
+# yarn
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.21.3
 
 # Cache dependencies
-COPY npm-shrinkwrap.json /tmp/npm-shrinkwrap.json
+COPY yarn.lock /tmp/yarn.lock
 COPY package.json /tmp/package.json
 RUN mkdir -p /opt/app && \
     cd /opt/app && \
-    cp /tmp/npm-shrinkwrap.json . && \
+    cp /tmp/yarn.lock . && \
     cp /tmp/package.json . && \
-    npm install --production --unsafe-perm --loglevel warn
+    yarn install --production --loglevel warn
 
 COPY . /opt/app
 
