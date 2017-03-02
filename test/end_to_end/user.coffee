@@ -1,9 +1,9 @@
 _ = require 'lodash'
 b = require 'b-assert'
-server = require '../../index'
+server = require '../../src'
 flare = require('flare-gun').express(server.app)
 
-schemas = require '../../schemas'
+schemas = require '../../src/schemas'
 util = require './util'
 
 describe 'User Routes', ->

@@ -1,4 +1,4 @@
-config = require '../config'
+config = require '../../config'
 
 DB = config.RETHINK.DB
 HOST = config.RETHINK.HOST

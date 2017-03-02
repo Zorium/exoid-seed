@@ -4,7 +4,7 @@ log = require 'loga'
 cluster = require 'cluster'
 os = require 'os'
 
-{setup, app} = require '../'
+{setup, app} = require '../src'
 config = require '../config'
 
 if config.ENV is config.ENVS.PROD

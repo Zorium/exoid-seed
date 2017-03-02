@@ -1,4 +1,4 @@
-server = require '../../index'
+server = require '../../src'
 flare = require('flare-gun').express(server.app)
 
 describe 'Health Check Routes', ->

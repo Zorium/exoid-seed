@@ -3,7 +3,7 @@ Promise = require 'bluebird'
 uuid = require 'node-uuid'
 
 r = require '../services/rethinkdb'
-config = require '../config'
+config = require '../../config'
 
 USERS_TABLE = 'users'
 

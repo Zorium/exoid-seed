@@ -6,7 +6,7 @@ express = require 'express'
 Promise = require 'bluebird'
 bodyParser = require 'body-parser'
 
-config = require './config'
+config = require '../config'
 routes = require './routes'
 r = require './services/rethinkdb'
 AuthService = require './services/auth'
@@ -50,7 +50,7 @@ createIndexIfNotExist = (tableName, indexName, indexFn, indexOpts) ->
 setup = ->
   createDatabaseIfNotExist config.RETHINK.DB
   .then ->
-    Promise.map fs.readdirSync('./models'), (modelFile) ->
+    Promise.map fs.readdirSync("#{__dirname}/models"), (modelFile) ->
       model = require('./models/' + modelFile)
       tables = model?.RETHINK_TABLES or []
 
