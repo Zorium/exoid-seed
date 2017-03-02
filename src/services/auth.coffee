@@ -1,4 +1,4 @@
-log = require 'loga'
+log = require 'winston'
 
 Auth = require '../models/auth'
 User = require '../models/user'

@@ -1,4 +1,4 @@
-log = require 'loga'
+log = require 'winston'
 
 config = require '../config'
 server = require '../src'
@@ -11,9 +11,6 @@ r = require('rethinkdbdash')
   db: DB
 
 before ->
-  unless config.VERBOSE
-    log.level = null
-
   truncateTables = ->
     r.dbList()
     .contains DB

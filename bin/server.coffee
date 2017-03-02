@@ -1,6 +1,6 @@
 #!/usr/bin/env coffee
 _ = require 'lodash'
-log = require 'loga'
+log = require 'winston'
 cluster = require 'cluster'
 os = require 'os'
 
@@ -14,7 +14,7 @@ if config.ENV is config.ENVS.PROD
         cluster.fork()
 
       cluster.on 'exit', (worker) ->
-        log "Worker #{worker.id} died, respawning"
+        log.info "Worker #{worker.id} died, respawning"
         cluster.fork()
     .catch log.error
   else

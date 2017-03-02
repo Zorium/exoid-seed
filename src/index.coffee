@@ -1,6 +1,6 @@
 fs = require 'fs'
 _ = require 'lodash'
-log = require 'loga'
+log = require 'winston'
 cors = require 'cors'
 express = require 'express'
 Promise = require 'bluebird'
@@ -12,6 +12,10 @@ r = require './services/rethinkdb'
 AuthService = require './services/auth'
 
 HEALTHCHECK_TIMEOUT = 1000
+MAX_CLIENT_LOG_LENGTH = 500
+
+unless config.VERBOSE
+  log.level = 'warn'
 
 # Setup rethinkdb
 createDatabaseIfNotExist = (dbName) ->
@@ -90,10 +94,11 @@ app.get '/healthcheck', (req, res, next) ->
   .catch next
 
 app.post '/log', (req, res) ->
-  unless req.body?.event is 'client_error'
-    return res.status(400).send 'must be type client_error'
+  if req.body?.event isnt 'client_error' or
+    JSON.stringify(req.body).length > MAX_CLIENT_LOG_LENGTH
+      return res.status(400).send 'invalid client_error'
 
-  log.warn req.body
+  log.info req.body
   res.status(204).send()
 
 app.post '/exoid', routes.asMiddleware()

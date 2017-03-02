@@ -5,13 +5,13 @@ env = process.env
 
 config =
   VERBOSE: if env.VERBOSE then env.VERBOSE is '1' else true
-  PORT: env.PORT or 50000
+  PORT: env.PORT or 50200
   ENV: env.NODE_ENV
   JWT_ES256_PRIVATE_KEY: env.JWT_ES256_PRIVATE_KEY
   JWT_ES256_PUBLIC_KEY: env.JWT_ES256_PUBLIC_KEY
-  JWT_ISSUER: 'exoid'
+  JWT_ISSUER: 'obelix'
   RETHINK:
-    DB: env.RETHINK_DB or 'exoid_seed'
+    DB: env.RETHINK_DB or 'obelix'
     HOST: env.RETHINK_HOST or 'localhost'
   ENVS:
     DEV: 'development'
