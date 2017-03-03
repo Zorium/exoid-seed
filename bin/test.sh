@@ -1,6 +1,5 @@
 #!/bin/sh
 [ -z "$VERBOSE" ] && export VERBOSE=0
-[ -z "$LINT" ] && export LINT=1
 export NODE_ENV=test
 export RETHINK_DB=obelix_test
 export JWT_ES256_PRIVATE_KEY="-----BEGIN EC PRIVATE KEY-----

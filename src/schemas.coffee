@@ -8,7 +8,6 @@ auth =
 
 user =
   id: id
-  username: Joi.string().allow(null)
 
 module.exports = {
   id

@@ -31,3 +31,10 @@ describe 'Health Check Routes', ->
             event: 'xxx'
             message: 'xxx'
           .expect 400
+
+      it  'fails to log very long messages', ->
+        flare
+          .post '/log',
+            event: 'client_error'
+            message: Array(1000).join 'x'
+          .expect 400

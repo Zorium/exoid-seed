@@ -13,21 +13,12 @@ defaults = (user) ->
 
   _.assign {
     id: uuid.v4()
-    username: null
   }, user
 
 class UserModel
   RETHINK_TABLES: [
     {
       name: USERS_TABLE
-      options: {}
-      indexes: [
-        {
-          name: 'username'
-          fn: null
-          options: {}
-        }
-      ]
     }
   ]
 
@@ -61,7 +52,6 @@ class UserModel
   sanitize: _.curry (requesterId, user) ->
     _.pick user, [
       'id'
-      'username'
     ]
 
 module.exports = new UserModel()

@@ -9,7 +9,7 @@ authed = (handler) ->
 
   (body, req, rest...) ->
     unless req.user?
-      router.throw status: 401, detail: 'Unauthorized'
+      router.throw status: 401, message: 'Unauthorized'
 
     handler body, req, rest...
 
@@ -23,4 +23,5 @@ module.exports = router
 # Authed Routes   #
 ###################
 .on 'users.getMe', authed UserCtrl.getMe
-.on 'users.updateMe', authed UserCtrl.updateMe
+
+# race conditions....

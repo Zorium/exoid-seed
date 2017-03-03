@@ -33,7 +33,7 @@ gulp.task 'dev:server', do ->
       if code is 8
         gulp.log 'Error detected, waiting for changes'
 
-gulp.task 'test', (if process.env.LINT is '1' then ['lint'] else []), ->
+gulp.task 'test', (if process.env.LINT is '0' then [] else ['lint']), ->
   gulp.src paths.test
   .pipe mocha
     compilers: 'coffee:coffee-script/register'
