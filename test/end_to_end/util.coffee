@@ -1,5 +1,3 @@
-_ = require 'lodash'
-
 login = ->
   (flare) ->
     flare

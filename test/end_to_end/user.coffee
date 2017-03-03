@@ -1,5 +1,3 @@
-_ = require 'lodash'
-b = require 'b-assert'
 server = require '../../src'
 flare = require('flare-gun').express(server.app)
 

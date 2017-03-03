@@ -12,14 +12,11 @@ class AuthService
       return next()
 
     Auth.userIdFromAccessToken accessToken
-    .then User.getById
-    .then (user) ->
-      if not user?
-        next()
-      else
+    .then (userId) ->
+      if userId?
         # Authentication successful
-        req.user = user
-        next()
+        req.userId = userId
+      next()
     .catch (err) ->
       log.warn err
       next()

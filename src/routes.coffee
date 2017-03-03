@@ -8,20 +8,14 @@ authed = (handler) ->
     return null
 
   (body, req, rest...) ->
-    unless req.user?
+    unless req.userId?
       router.throw status: 401, message: 'Unauthorized'
 
     handler body, req, rest...
 
 module.exports = router
-###################
-# Public Routes   #
-###################
+# Public Routes
 .on 'auth.login', AuthCtrl.login
 
-###################
-# Authed Routes   #
-###################
+# Authed Routes
 .on 'users.getMe', authed UserCtrl.getMe
-
-# race conditions....
