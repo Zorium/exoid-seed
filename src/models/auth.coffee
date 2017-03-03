@@ -1,5 +1,4 @@
 _ = require 'lodash'
-Promise = require 'bluebird'
 uuid = require 'node-uuid'
 jwt = require 'jsonwebtoken'
 
@@ -16,11 +15,11 @@ generateAccessToken = (userId) ->
   }
 
 decodeAccessToken = (token) ->
-  Promise.promisify(jwt.verify, jwt)(
-    token,
-    config.JWT_ES256_PUBLIC_KEY,
-    {issuer: config.JWT_ISSUER}
-  )
+  new Promise (resolve, reject) ->
+    jwt.verify token,
+      config.JWT_ES256_PUBLIC_KEY,
+      {issuer: config.JWT_ISSUER},
+      (err, res) -> if err? then reject(err) else resolve(res)
 
 class AuthModel
   fromUserId: (userId) ->

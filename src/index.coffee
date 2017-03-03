@@ -3,7 +3,6 @@ _ = require 'lodash'
 log = require 'winston'
 cors = require 'cors'
 express = require 'express'
-Promise = require 'bluebird'
 bodyParser = require 'body-parser'
 
 config = require '../config'
@@ -54,14 +53,14 @@ createIndexIfNotExist = (tableName, indexName, indexFn, indexOpts) ->
 setup = ->
   createDatabaseIfNotExist config.RETHINK.DB
   .then ->
-    Promise.map fs.readdirSync("#{__dirname}/models"), (modelFile) ->
+    Promise.all _.map fs.readdirSync("#{__dirname}/models"), (modelFile) ->
       model = require('./models/' + modelFile)
       tables = model?.RETHINK_TABLES or []
 
-      Promise.map tables, (table) ->
+      Promise.all _.map tables, (table) ->
         createTableIfNotExist table.name, table.options
         .then ->
-          Promise.map (table.indexes or []), ({name, fn, options}) ->
+          Promise.all _.map (table.indexes or []), ({name, fn, options}) ->
             fn ?= null
             createIndexIfNotExist table.name, name, fn, options
         .then ->
@@ -80,17 +79,22 @@ app.use AuthService.middleware
 app.get '/ping', (req, res) -> res.send 'pong'
 
 app.get '/healthcheck', (req, res, next) ->
-  Promise.settle [
-    r.dbList().run().timeout HEALTHCHECK_TIMEOUT
-  ]
-  .spread (rethinkdb) ->
-    result =
-      rethinkdb: rethinkdb.isFulfilled()
+  settle = (promise) ->
+    new Promise (resolve, reject) ->
+      setTimeout reject, HEALTHCHECK_TIMEOUT
+      promise.then resolve
+      .catch reject
+    .then -> true
+    .catch -> false
 
+  Promise.all(_.map [
+    r.dbList().run()
+  ], settle)
+  .then ([rethinkdb]) ->
+    result = {rethinkdb}
     result.healthy = _.every _.values result
     return result
-  .then (status) ->
-    res.json status
+  .then (status) -> res.json status
   .catch next
 
 app.post '/log', (req, res) ->
